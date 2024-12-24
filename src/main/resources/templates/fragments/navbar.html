@@ -1,0 +1,63 @@
+<th:block th:fragment="navbar">
+    <header class="d-flex justify-content-between text-center align-items-center mt-3 mb-5">
+        <a class="m-0 fw-bold text-primary text-decoration-none" style="line-height: 1;
+            font-size: calc(var(--bs-body-font-size) * 2.4);" th:href="${user.role.toString() =='MANAGER'? '/manage-assigns':'/'}">APPpoint</a>
+        <form action="/" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <div class="input-group">
+                <select name="type" class="form-select" style="width: 26%" required>
+                    <option value="" disabled selected class="d-none">Поиск по</option>
+                    <option value="serviceName" th:selected = "${type!=null && type =='serviceName'? true: false }">Названию услуги</option>
+                    <option value="serviceDescription" th:selected = "${type!=null && type =='serviceDescription'? true: false }">Описанию услуги
+                    </option>
+                    <option value="companyName" th:selected = "${type!=null && type =='companyName'? true: false }">Названию компании</option>
+                    <option value="executor" th:selected = "${type!=null && type =='executor'? true: false }">Специалисту</option>
+                </select>
+                <input type="text" name="request" placeholder="Поиск услуги, специалиста..." class="form-control"
+                       style="width: 64%;" th:value = "${request!=null? request: ''}" required>
+                <button type="submit" class="btn btn-outline-primary" style="width: 9%;"><i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+
+       <div class = "btn-group">
+        <a href="/profile" class="btn btn-outline-primary d-flex flex-vcenter">
+            <th:block th:insert="~{fragments/profile-pic :: profilePicture}"></th:block>
+            <span class = "align-middle" th:text="${user.login}"></span>
+        </a>
+           <button th:if = "${user.role.toString() == 'MANAGER'}" type="button" class="btn btn-primary" id="openModal" data-bs-toggle="modal" data-bs-target="#ollamaModal">
+               <i class="bi bi-stars"></i>
+           </button>
+       </div>
+    </header>
+
+    <!-- Модальное окно -->
+    <div class="modal fade" id="ollamaModal" tabindex="-1" aria-labelledby="ollamaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ollamaModalLabel">Чат с Ollama</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="chat-form">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <div class="mb-3">
+                            <textarea id="prompt" class="form-control" placeholder="Введите ваш запрос..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Отправить</button>
+                    </form>
+                    <div id="response">
+                        <h5>Ответ:</h5>
+                        <div class = "card p-2">
+                            <p id="response-text">Здесь будет отображаться ответ от модели.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>

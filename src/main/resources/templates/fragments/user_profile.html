@@ -1,0 +1,65 @@
+<th:block th:fragment="userSection">
+    <h2 class="lead">Мои записи</h2>
+
+    <div class = "card-wrapper mb-2" th:each="service: ${services}"  th:classappend="${ service.status.toString()}">
+
+        <div class="card " style="width: 98%">
+            <div class="card-header justify-content-between d-flex">
+                <h3 class="m-0" th:text="${service.executorToService.providedService.title}"></h3>
+                <form th:action="${'/book/delete/'+ service.id}" method="post"
+                      onsubmit="return confirm('Вы уверены, что хотите удалить эту запись?');">
+
+                    <button type="submit" class="btn btn-outline-danger"><i class="bi bi-trash"></i></button>
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                </form>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <span th:utext="${'<strong>Время: </strong> ' + (#temporals.format(service.timeBegin, 'HH:mm')).toString() + ' - ' + (#temporals.format(service.timeEnd, 'HH:mm')).toString()}"></span>
+                    </li>
+                    <li class="list-group-item">
+                        <span th:utext="${'<strong>Дата: </strong> ' + (#temporals.format(service.timeEnd, 'dd.MM.yy')).toString()}"></span>
+                    </li>
+                    <li class="list-group-item clickable">
+                        <span th:utext="${'<strong>Компания: </strong> ' + service.executorToService.executor.company.name}" th:onclick=" @{'location.href = \'/company/'+${service.executorToService.executor.company.id} + '\''}"></span>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+    </div>
+
+</th:block>
+
+<th:block th:fragment="managerSection">
+    <h2 class="lead">Моя компания</h2>
+    <div class="card clickable mb-3" th:each="company: ${companies}">
+        <div class="card-header d-flex justify-content-between"
+             th:onclick=" @{'location.href = \'/company/'+${company.first.id} + '\''}">
+            <h2 class ="m-0" th:text="${company.first.name}"></h2>
+        </div>
+        <div class="card-body">
+            <h1 class="lead">Список менеджеров</h1>
+            <ul  class="list-group">
+                <li th:each="manager: ${company.second}" class="list-group-item"
+                    th:utext="${manager == company.first.createdBy? '<b>'+manager.name + ' '+ manager.surname+ ' '+ manager.patronymic +'</b>': manager.name + ' '+ manager.surname+ ' '+ manager.patronymic}">
+
+                </li>
+
+            </ul>
+            <form th:action="${'profile/leave_company/' + company.first.id}" method="post"
+                  th:if="${company.second.size == 1}"
+                  onsubmit="return confirm('Вы уверены, что хотите покинуть компанию? После этого действия компания будет удалена');">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button class="btn btn-danger mt-md-2" type="submit">Покинуть</button>
+            </form>
+            <form th:action="${'profile/leave_company/' + company.first.id}" method="post"
+                  th:if="${company.second.size != 1}"
+                  onsubmit="return confirm('Вы уверены, что хотите покинуть компанию?');">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button class="btn btn-danger mt-md-2" type="submit">Покинуть</button>
+            </form>
+        </div>
+    </div>
+</th:block>

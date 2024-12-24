@@ -1,0 +1,17 @@
+.checkbox-div {
+    width: 100%;
+    height: inherit;
+    display: inline-block;
+    cursor: pointer;
+    background-color: white;
+    position: relative;
+}
+
+.checkbox-div.checked {
+    border: 3px solid #44a83e;
+    box-shadow: inset 0 0 5px rgba(12, 255, 0, 0.32);
+}
+
+.hidden-checkbox {
+    display: none;
+}

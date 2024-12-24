@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${executor!=null?executor.surname + ' ' + executor.name: 'Создание'}"></title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"/>
+    <link rel="stylesheet" th:href="@{/css/root.css}">
+    <script th:src="@{/js/profile-pic-placeholder.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/profile-pic-placeholder.css}">
+    <link rel="stylesheet" th:href="@{/css/card-wrapper.css}">
+    <link rel="stylesheet" th:href="@{/css/checkable-div.css}">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .profile-header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5 ">
+    <div>
+        <th:block th:insert="~{fragments/navbar::navbar}"></th:block>
+    </div>
+    <div class="profile-header text-center container d-flex justify-content-center" style="height: 96px;">
+        <th:block th:insert="~{fragments/profile-pic::executorPlainPicture}"></th:block>
+        <h1 th:text="${executor!=null?executor.surname + ' ' + executor.name:'Создание профиля сотрудника'}"></h1>
+    </div>
+    <form th:action="${executor!=null? '/executor/'+ executor.id+ '/edit' : '/executor/'+ id+ '/add'}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <div class="row justify-content-center">
+            <div class="col-md-6" th:if="${edit ==null}">
+                <h1 class="lead mb-3">Контактная информация</h1>
+                <ul class="list-group  mb-3">
+                    <li class="list-group-item"
+                        th:utext="${'<b>ФИО:</b> ' + executor.surname + ' ' + executor.name + ' ' + executor.patronymic}"></li>
+                    <li class="list-group-item" th:utext="${'<b>Номер:</b> ' + executor.phone}"></li>
+                    <li class="list-group-item" th:utext="${'<b>Почта:</b> ' + executor.email}"></li>
+                    <li class="list-group-item clickable" th:utext="${'<b>Компания:</b> ' + executor.company.name}"
+                        th:onclick=" @{'location.href = \'/company/'+${executor.company.id} + '\''}"></li>
+                    <li class="list-group-item text-wrap" th:utext="${'<b>Описание:</b> ' + executor.description}"></li>
+                </ul>
+                <h1 class="lead">Расписание</h1>
+                <ul class="list-group">
+                    <li class="list-group-item"
+                        th:each="weekday : ${T(com.example.auth_spring.model.enums.Weekday).values()}"
+                        th:if="${schedule.get(weekday.toString()) != null}">
+                        <p th:utext="${'<b>' + weekdays.get(weekday.toString()) + ':</b> ' + #temporals.format(schedule.get(weekday.toString()).getTimeBegin(), 'HH:mm') + ' - ' + #temporals.format(schedule.get(weekday.toString()).getTimeEnd(), 'HH:mm')}"></p>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6" th:if="${edit==true}">
+
+                <h2 th:text="${executor!=null? 'Изменение личной информации': 'Создание профиля сотрудника'}"></h2>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Фамилия" id="surname" name="surname"
+                               th:value="${executor!=null? executor.surname: ''}">
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Имя" id="name" name="name"
+                               th:value="${executor!=null? executor.name: ''}">
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Отчество" id="patronymic" name="patronymic"
+                               th:value="${executor!=null? executor.patronymic: ''}">
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" placeholder="Почта" id="email" name="email"
+                               th:value="${executor!=null? executor.email:''}">
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Номер телефона" id="phone" name="phone"
+                               th:value="${executor!=null?executor.phone: ''}" maxlength="11" size="11">
+                    </div>
+                    <div class="mb-3">
+                        <textarea type="text" class="form-control" placeholder="Описание" id="description"
+                                  name="description" th:text="${executor!=null?executor.description: ''}"></textarea>
+                    </div>
+                    <div class="text-center btn-group container-fluid">
+                        <button type="submit" class="btn btn-outline-dark">Сохранить</button>
+                        <a th:href="${executor!=null? '/executor/'+ executor.id: 'javascript:history.back()'}" class="btn btn-outline-dark">Отмена</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h1 class="lead mb-3">Предоставляемые услуги</h1>
+                <div class="card clickable checkbox-div" th:each="service : ${services}"
+                     th:onclick="${edit==null} ? 'location.href = \'/service/' + ${service.id} + '\'' : null">
+                    <div class="card-header">
+                        <h2 th:text="${service.title}"></h2>
+                        <input th:if="${edit!=null}" class="hidden-checkbox" type="checkbox"
+                               th:id="${'service'+ service.id}"
+                               th:value="${service.id}"
+                               name="services"
+                               th:checked="${checked_services!=null?checked_services.get(service.id): false}"/>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <p th:utext="${'<b>Длительность:</b> '+ service.duration + ' мин'}"></p>
+                            </li>
+                            <li class="list-group-item text-wrap">
+                                <p th:utext="${'<b>Описание:</b> '+ service.description}"></p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="text-center mt-4 container-fluid d-flex justify-content-center align-items-stretch mb-2">
+        <a class="btn btn-primary me-2 " th:href="@{'/company/' + ${executor!=null?executor.company.id: id}}">
+            Посмотреть компанию
+        </a>
+
+        <form th:if="${user.role == 'MANAGER' && executor!=null}" th:action="@{'/executor/delete/' + ${executor.id}}"
+              method="post"
+              onsubmit="return confirm('Вы уверены, что хотите удалить этого пользователя?');">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit" class="btn btn-danger me-2">Удалить</button>
+        </form>
+
+        <div class="d-flex ">
+            <a class="btn btn-secondary me-2" th:if="${user.role == 'MANAGER' && executor!=null}"
+               th:href="@{'/executor/' + ${executor.id} + '/edit'}">
+                Изменить данные
+            </a>
+
+            <button th:if="${user.role == 'MANAGER' && executor!=null}" type="button" class="btn btn-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#scheduleModal">
+                Изменить расписание
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal for schedule editing -->
+<div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="scheduleModalLabel">Изменение расписания</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" th:if="${executor!=null}">
+                <form th:action="@{/executor/{id}/edit/schedule(id=${executor.id})}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <div class="row">
+                        <div class="col-12">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>День недели</th>
+                                    <th>Начало работы</th>
+                                    <th>Конец работы</th>
+                                    <th>Выходной</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="weekday : ${T(com.example.auth_spring.model.enums.Weekday).values()}">
+                                    <td th:text="${weekdays.get(weekday.name().toString())}"></td>
+                                    <td>
+                                        <input type="time" class="form-control" th:name="${weekday.name() + '_start'}"
+                                               th:value="${schedule.get(weekday.toString()) != null ? #temporals.format(schedule.get(weekday.toString()).getTimeBegin(), 'HH:mm') : ''}">
+                                    </td>
+                                    <td>
+                                        <input type="time" class="form-control" th:name="${weekday.name() + '_end'}"
+                                               th:value="${schedule.get(weekday.toString()) != null ? #temporals.format(schedule.get(weekday.toString()).getTimeEnd(), 'HH:mm') : ''}">
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" th:name="${weekday.name() + '_off'}">
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Сохранить расписание</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script th:src="@{/js/checkable-div.js}"></script>
+<script th:src="@{/js/llm-chat.js}"></script>
+
+</html>

@@ -1,0 +1,15 @@
+
+.profile-placeholder {
+    height: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    padding: 0.2em;
+    margin: 0.1em 1em 0.1em 0.1em;
+}

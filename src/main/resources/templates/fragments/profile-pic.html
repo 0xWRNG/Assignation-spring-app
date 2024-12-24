@@ -1,0 +1,15 @@
+<th:block th:fragment ="profilePicture">
+  <div class="profile-placeholder" th:data-str = "${user.login}">
+    <span th:text="${user.name.toUpperCase().charAt(0).toString() + user.surname.toUpperCase().charAt(0).toString()}"></span>
+  </div>
+</th:block>
+<th:block th:fragment ="executorPicture">
+  <div class="profile-placeholder" th:data-str = "${executor.first.surname+executor.first.name}">
+    <span th:text="${executor.first.name.toUpperCase().charAt(0).toString() +  executor.first.surname.toUpperCase().charAt(0).toString()}"></span>
+  </div>
+</th:block>
+<th:block th:fragment ="executorPlainPicture">
+  <div class="profile-placeholder" th:data-str = "${executor!=null?executor.surname+executor.name: '?'}">
+    <span th:text="${executor!=null?executor.name.toUpperCase().charAt(0).toString() +  executor.surname.toUpperCase().charAt(0).toString(): '?'}"></span>
+  </div>
+</th:block>

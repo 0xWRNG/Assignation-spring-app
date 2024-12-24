@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <title>Login</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .vh-100 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f8f9fa;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header.error {
+            border-radius: 0 !important;
+        }
+    </style>
+</head>
+<body>
+<div class="container vh-100">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title text-center">Вход</h2>
+        </div>
+        <div class="card-header error alert alert-danger" th:if="${error}">
+            <span class="error align-middle" th:text="${error}"></span>
+        </div>
+        <div class="card-header error alert alert-danger" th:if="${logout}">
+            <span class="align-middle" th:text="${logout}"></span>
+        </div>
+        <form th:action="@{/auth/login}" method="POST">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <div class="card-body">
+                <div>
+                    <input type="text" class="form-control mb-3" placeholder="Имя пользователя" aria-label="Username"
+                           id="login" name="login" required>
+                    <input type="password" class="form-control mb-3" placeholder="Пароль" aria-label="Password"
+                           id="password" name="password" required>
+                </div>
+                <hr>
+                <div class="btn-group container-fluid" role="group">
+                    <button type="submit" class="btn btn-outline-dark">Войти</button>
+                    <a href="/auth/register" class="btn btn-outline-dark">Регистрация</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

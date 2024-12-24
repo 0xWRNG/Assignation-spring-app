@@ -1,0 +1,24 @@
+.card-wrapper {
+    border-radius: 15px;
+    margin-bottom: 15px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+
+.card-wrapper.approved{
+    background-color: #44a83e;
+}
+
+
+.card-wrapper.not_approved{
+    background-color: #d1b008;
+}
+
+.card-wrapper.canceled{
+    background-color: #d15808;
+}
+
+.card-wrapper:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}

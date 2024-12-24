@@ -1,0 +1,30 @@
+<th:block th:fragment="editSection">
+
+    <form action="/profile/edit" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <h2>Изменение личной информации</h2>
+        <div class="card-body">
+            <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Фамилия" id="surname" name="surname" th:value="${surname}">
+            </div>
+            <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Имя" id="name" name="name" th:value="${name}">
+            </div>
+            <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Отчество" id="patronymic" name="patronymic" th:value="${patronymic}">
+            </div>
+            <div class="mb-3">
+                <input type="email" class="form-control" placeholder="Почта" id="email" name="email" th:value="${email}">
+            </div>
+            <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Номер телефона" id="phone" name="phone" th:value="${phone}" maxlength="11" size="11">
+            </div>
+            <div class="text-center btn-group container-fluid">
+                <button type="submit" class="btn btn-outline-dark">Сохранить</button>
+                <a href="/profile" class="btn btn-outline-dark">Отмена</a>
+            </div>
+        </div>
+    </form>
+
+</th:block>
+

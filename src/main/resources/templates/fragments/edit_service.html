@@ -1,0 +1,137 @@
+<th:block th:fragment="editSection" xmlns="http://www.w3.org/1999/html">
+    <div class="d-flex justify-content-center">
+        <h1 class="display-5 page_title "
+            th:utext="${service!=null?'<strong>'+service.title+'</strong>': 'Создание услуги'}"></h1>
+    </div>
+    <form th:action="${service!=null? '/service/modify/'+ service.id: '/service/add/'+id }" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <div class="row">
+            <div class="col-6">
+                <h1 class="lead">Изменение информации</h1>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Название" id="title" name="title"
+                               th:value="${service!=null? service.title: ''}">
+                    </div>
+                    <div class="mb-3">
+                        <textarea type="text" class="form-control" placeholder="Описание" id="description"
+                                  name="description"
+                                  th:text="${service!=null? service.description: ''}"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <input type="number" class="form-control" placeholder="Длительность" id="duration"
+                               name="duration"
+                               th:value="${service!=null? service.duration: ''}">
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <h1 class="lead">Изменение сотрудников</h1>
+                <div th:each="executor:${executors}" class="card mb-3 clickable checkbox-div">
+                    <div class="card-header ">
+                        <h2 th:text="${executor.second.name + ' '+ executor.second.surname}"></h2>
+                        <input class="hidden-checkbox" type="checkbox" th:id="${'executor'+ executor.second.id}"
+                               th:value="${executor.second.id}"
+                               name="executors" th:checked="${executor.first}"/>
+                    </div>
+                    <div class="card-body" th:text="${executor.second.description}"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="d-flex justify-content-start fixed-bottom text-center bg-light p-3 ">
+            <div class="btn-group">
+                <button type="submit" class="btn btn-outline-primary">Сохранить</button>
+                <a th:href="${service!=null?'/service/' + service.id: '/company/' + id}" class="btn btn-outline-dark">Отмена</a>
+            </div>
+            <div th:if="${service!=null}">
+                <form th:action="${'/service/delete/'+service.id}" method="post"
+                      onsubmit="return confirm('Вы уверены, что хотите удалить эту услугу?');">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn btn-danger ms-3">Удалить</button>
+                </form>
+            </div>
+        </div>
+    </form>
+    </div>
+</th:block>
+
+<th:block th:fragment="showSection">
+    <div class="d-flex justify-content-center">
+        <h1 class="display-5 page_title " th:utext="${'<strong>'+service.title+'</strong>'}"></h1>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <h1 class="lead">Описание</h1>
+            <ul class="list-group">
+                <li class="list-group-item" th:utext="${'<b>Название:</b> ' +  service.title}"></li>
+                <li class="list-group-item" th:utext="${'<b>Длительность:</b> ' +  service.duration + ' мин'}"></li>
+                <li class="list-group-item" th:utext="${'<b>Название компании:</b> ' +  service.company.name}"></li>
+                <li class="list-group-item" th:utext="${'<b>Описание:</b> ' +  service.description}"></li>
+            </ul>
+
+        </div>
+        <div class="col-6" th:if="${executors.size()>0}">
+            <h1 class="lead">Доступные специалисты</h1>
+
+            <div class="card mb-3 clickable" th:each="executor: ${executors}">
+                <div class="card-header d-flex " style="height: 50px;"
+                     th:onclick=" @{'location.href = \'/executor/'+${executor.id} + '\''}">
+                    <th:block th:insert="~{fragments/profile-pic::executorPlainPicture}"></th:block>
+                    <h2 th:text="${executor.surname + ' '+executor.name}"></h2>
+                </div>
+                <div class="card-body" th:text="${executor.description}"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center fixed-bottom text-center bg-light p-3">
+        <div class="btn-group">
+            <a th:if="${user.Role.toString()=='MANAGER'}" class="btn btn-outline-primary"
+               th:href="@{'/service/modify/'+ ${service.id}}">Изменить</a>
+            <a class="btn btn-outline-primary" th:href="@{'/company/'+ ${service.company.id}}">В компанию</a>
+            <a class="btn btn-outline-primary" th:if="${user.role.toString() != 'MANAGER'}" th:href="@{'/book/'+ ${service.company.id}+ '/'+${service.id}}">Записаться</a>
+
+        </div>
+    </div>
+
+</th:block>
+
+<!--<th:block th:fragment="addSection">-->
+<!--    <form class="form-with-checkboxes" th:action="${'/service/add/'+ id}" method="post">-->
+<!--        <div class="row">-->
+<!--            <div class="col-6">-->
+<!--                <h1 class="lead">Информация об услуге</h1>-->
+<!--                <div class="mb-3">-->
+<!--                    <input type="text" class="form-control" placeholder="Название" name="title">-->
+<!--                </div>-->
+<!--                <div class="mb-3">-->
+<!--                    <textarea class="form-control" placeholder="Описание" name="description"></textarea>-->
+<!--                </div>-->
+<!--                <div class="mb-3">-->
+<!--                    <input type="number" class="form-control" placeholder="Длительность (мин)" name="duration">-->
+<!--                </div>-->
+
+<!--            </div>-->
+<!--            <div class="col-6">-->
+<!--                <div th:each="executor:${executors}" class="card mb-3">-->
+<!--                    <div class="card-header checkbox-div">-->
+<!--                        <h2 th:text="${executor.name + ' '+ executor.surname}"></h2>-->
+<!--                        <input class="hidden-checkbox" type="checkbox" th:id="${'executor'+ executor.id}"-->
+<!--                               th:value="${executor.id}"-->
+<!--                               name="executors"/>-->
+<!--                    </div>-->
+<!--                    <div class="card-body" th:text="${executor.description}"></div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="d-flex justify-content-start fixed-bottom text-center bg-light p-3">-->
+<!--            <div class="input-group">-->
+<!--                <button type="submit" class="btn btn-outline-dark">Сохранить</button>-->
+<!--                <a th:href="${'/company/' + id}" class="btn btn-outline-dark">Отмена</a>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </form>-->
+
+<!--</th:block>-->
